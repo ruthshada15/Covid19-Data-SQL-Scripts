@@ -98,7 +98,7 @@ ORDER BY TotalDeathsBycountry DESC
 SELECT date, 
 SUM(new_cases) AS TotalCasesPerDay,
 SUM(new_deaths) AS TotalDeathsPerDay
---(SUM(new_deaths)/SUM(CAST(new_cases AS int)))*100 AS DeathPercentPerDay -- DIVIDE BY ZERO ERROR, FAULTY DATA
+--(SUM(new_deaths)/SUM(CAST(new_cases AS int)))*100 AS DeathPercentPerDay -- DIVIDE BY ZERO ERROR, BECAUSE OF FAULTY DATA
 FROM PortfolioProject1..CovidDeaths
 WHERE continent IS NOT NULL 
 GROUP BY date
@@ -170,7 +170,7 @@ SUM(CONVERT(bigint, vac.new_vaccinations)) OVER (PARTITION BY dea.location ORDER
  FROM CTE_MaxVax
  ; --The above not working, giving astronomical numbers
 
-
+ 
  WITH CTE_PopvsVac (Continent, Location, Date, Population, New_Vaccinantions, VaccinationRollingCount)
  AS
  (
@@ -210,7 +210,7 @@ vac.total_vaccinations
 ;
 
 
--- TEMP TABLE
+-- CREATING A TEMP TABLE
 DROP TABLE IF EXISTS #PercentPopulationVax
 CREATE TABLE #PercentPopulationVax
 (
@@ -235,7 +235,8 @@ SUM(CONVERT(bigint, vac.new_vaccinations)) OVER (PARTITION BY dea.location ORDER
  FROM #PercentPopulationVax
 ;
 
--- CREATING VIEW TO STORE DAT FOR LATER VISUALIZATIONS
+-- CREATING VIEW TO STORE DATA FOR LATER VISUALIZATIONS
+
 CREATE VIEW PercentPopulationVax AS
 SELECT dea.continent, dea.location, dea.date, dea.population, vac.new_vaccinations, 
 SUM(CONVERT(bigint, vac.new_vaccinations)) OVER (PARTITION BY dea.location ORDER BY dea.location, dea.date) AS VaccinationRollingCount
